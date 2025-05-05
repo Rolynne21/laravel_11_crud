@@ -1,10 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+require_once 'AuthController.php';  
+require_once 'web.php';  
 
-use Illuminate\Http\Request;
+$authController = new AuthController();
 
-class AuthController extends Controller
-{
-    //
+
+if (isset($routes[$_SERVER['REQUEST_URI']])) {
+
+    $action = explode('=', $routes[$_SERVER['REQUEST_URI']])[1];
+    
+    
+    if ($action === 'login') {
+        $authController->login();
+    } elseif ($action === 'register') {
+        $authController->register();
+    }
+} else {
+    echo "404 Not Found"; 
 }
+?>
