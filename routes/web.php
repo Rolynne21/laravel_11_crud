@@ -1,22 +1,21 @@
 <?php
 
-$routes = [
-    'login' => 'authController.php?action=login', 
-    'register' => 'authController.php?action=register', 
-    'logout' => 'logout.php',  
-    'dashboard' => 'dashboard.php',  
-];
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 
+// Authentication Routes
+Route::get('/', function () {
+    return auth()->check() ? redirect()->route('products.index') : redirect()->route('login');
+});
 
-$requestUri = $_SERVER['REQUEST_URI'];
-$requestUri = trim($requestUri, '/');  
+Route::get('/login', [AuthController::class, 'login'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'authenticate'])->name('login.authenticate');
+Route::get('/register', [AuthController::class, 'register'])->name('register')->middleware('guest');
+Route::post('/register', [AuthController::class, 'store'])->name('register.store');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-if (array_key_exists($requestUri, $routes)) {
-   
-    header("Location: " . $routes[$requestUri]);
-    exit;
-} else {
-   
-    echo "404 Not Found";
-}
-?>
+// Protected Routes
+Route::middleware(['auth'])->group(function () {
+    Route::resource('products', ProductController::class);
+});

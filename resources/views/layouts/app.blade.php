@@ -12,6 +12,21 @@ min.css">
 href="https://cdn.jsdelivr.net/npm/bootstrapicons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body> 
+    <!-- Navbar with user info and logout -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">Laravel CRUD</a>
+            <div class="d-flex ms-auto align-items-center">
+                @auth
+                    <span class="text-white me-3">Signed in as: <strong>{{ Auth::user()->name }}</strong></span>
+                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                    </form>
+                @endauth
+            </div>
+        </div>
+    </nav>
  <div class="container">
  <h3 class=" mt-3">Simple Laravel 11 CRUD Application 
 Tutorial</h3>

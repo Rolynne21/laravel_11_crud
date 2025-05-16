@@ -1,8 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Product;
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 class ProductController extends Controller
@@ -12,9 +11,8 @@ class ProductController extends Controller
  */
  public function index() : View
  {
- return view('products.index', [
- 'products' => Product::latest()->paginate(4)
- ]);
+ $products = Product::latest()->paginate(10);
+ return view('products.index', compact('products'));
  }
 
 
@@ -28,12 +26,17 @@ class ProductController extends Controller
  /**
  * Store a newly created resource in storage.
  */
- public function store(StoreProductRequest $request) : 
-RedirectResponse
+ public function store(Request $request) : RedirectResponse
  {
- Product::create($request->validated());
+ $request->validate([
+ 'name' => 'required',
+ 'description' => 'required',
+ 'price' => 'required|numeric'
+ ]);
+
+ Product::create($request->all());
  return redirect()->route('products.index')
- ->withSuccess('New product is added successfully.');
+ ->with('success', 'Product created successfully.');
  }
  /**
  * Display the specified resource.
@@ -52,13 +55,18 @@ RedirectResponse
  /**
  * Update the specified resource in storage.
  */
- public function update(UpdateProductRequest $request, Product
-$product) : RedirectResponse
+ public function update(Request $request, Product $product) : RedirectResponse
  {
- $product->update($request->validated());
- return redirect()->back()
- ->withSuccess('Product is updated successfully.');
-}
+ $request->validate([
+ 'name' => 'required',
+ 'description' => 'required',
+ 'price' => 'required|numeric'
+ ]);
+
+ $product->update($request->all());
+ return redirect()->route('products.index')
+ ->with('success', 'Product updated successfully');
+ }
 /**
 * Remove the specified resource from storage.
 */
@@ -66,7 +74,7 @@ public function destroy(Product $product) : RedirectResponse
 {
 $product->delete();
 return redirect()->route('products.index')
-->withSuccess('Product is deleted successfully.');
+->with('success', 'Product deleted successfully');
 }
 }
 
