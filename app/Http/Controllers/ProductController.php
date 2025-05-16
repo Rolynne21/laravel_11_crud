@@ -29,12 +29,27 @@ class ProductController extends Controller
  public function store(Request $request) : RedirectResponse
  {
  $request->validate([
+ 'code' => 'required',
  'name' => 'required',
- 'description' => 'required',
- 'price' => 'required|numeric'
+ 'quantity' => 'required|integer',
+ 'price' => 'required|numeric',
+ 'description' => 'nullable',
+ 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
  ]);
 
- Product::create($request->all());
+ $data = $request->only(['code', 'name', 'quantity', 'price', 'description']);
+
+ if ($request->hasFile('image')) {
+ $path = $request->file('image')->store('products', 'public');
+ $data['image'] = $path;
+ \Log::info('Image path:', [$path]);
+ } else {
+ $data['image'] = null;
+ }
+
+ \Log::info('Product data:', $data);
+
+ Product::create($data);
  return redirect()->route('products.index')
  ->with('success', 'Product created successfully.');
  }
@@ -58,12 +73,21 @@ class ProductController extends Controller
  public function update(Request $request, Product $product) : RedirectResponse
  {
  $request->validate([
+ 'code' => 'required',
  'name' => 'required',
- 'description' => 'required',
- 'price' => 'required|numeric'
+ 'quantity' => 'required|integer',
+ 'price' => 'required|numeric',
+ 'description' => 'nullable',
+ 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
  ]);
 
- $product->update($request->all());
+ $data = $request->only(['code', 'name', 'quantity', 'price', 'description']);
+
+ if ($request->hasFile('image')) {
+ $data['image'] = $request->file('image')->store('products', 'public');
+ }
+
+ $product->update($data);
  return redirect()->route('products.index')
  ->with('success', 'Product updated successfully');
  }

@@ -17,7 +17,7 @@
  </div>
  </div>
  <div class="card-body">
- <form action="{{ route('products.update', $product->id) }}" method="post">
+ <form action="{{ route('products.update', $product->id) }}" method="post" enctype="multipart/form-data">
  @csrf
 @method("PUT")
  <div class="mb-3 row">
@@ -65,6 +65,20 @@
  @enderror
  </div>
  </div>
+<div class="mb-3 row">
+    <label for="image" class="col-md-4 col-form-label text-md-end text-start">Product Image</label>
+    <div class="col-md-6">
+        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
+        @error('image')
+            <span class="text-danger">{{ $message }}</span>
+        @enderror
+        @if($product->image)
+            <div class="mt-2">
+                <img src="{{ asset('storage/' . $product->image) }}" alt="Product Image" style="max-width: 120px; max-height: 120px;">
+            </div>
+        @endif
+    </div>
+</div>
 <div class="mb-3 row">
  <input type="submit" class="col-md-3 offsetmd-5 btn btn-primary" value="Update">
  </div>
